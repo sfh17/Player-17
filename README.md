@@ -29,7 +29,7 @@ or removing it.
 
 **Flatpak — any distro**
 
-    flatpak install --user ./player-17_*_x86_64.flatpak       # install / update
+    flatpak install --user ./Player-17.flatpak                 # install / update
     flatpak uninstall --user io.github.sfh17.Player-17         # remove
 
 **Ubuntu / Zorin / Debian (.deb)**
