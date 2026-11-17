@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Player-17 app icon. 128x128 grid, transparent background (Flathub / GNOME requirements). -->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- black disc with the blue rim -->
+  <circle cx="64" cy="64" r="58" fill="#000000" stroke="#0a84ff" stroke-width="6"/>
+  <!-- rings in the colors of the window dots: pink, orange, green (thick enough for small sizes) -->
+  <circle cx="64" cy="64" r="45" fill="none" stroke="#ff0080" stroke-width="3"/>
+  <circle cx="64" cy="64" r="37" fill="none" stroke="#ff7a00" stroke-width="3"/>
+  <circle cx="64" cy="64" r="29" fill="none" stroke="#00e050" stroke-width="3"/>
+  <!-- white beamed notes -->
+  <g fill="#ffffff">
+    <rect x="47.5" y="42" width="5.5" height="47" rx="1"/>
+    <rect x="86.5" y="28" width="5.5" height="48" rx="1"/>
+    <polygon points="47.5,42 92,28 92,35 47.5,49"/>
+    <ellipse cx="41" cy="89" rx="11.5" ry="10.5"/>
+    <ellipse cx="80" cy="76" rx="11.5" ry="10.5"/>
+  </g>
+</svg>

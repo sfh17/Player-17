@@ -1,0 +1,196 @@
+# Flatpak manifest for Player-17.
+# Build and install locally:
+#   flatpak-builder --user --install --force-clean --install-deps-from=flathub build io.github.sfh17.Player-17.yml
+# Run:
+#   flatpak run io.github.sfh17.Player-17
+app-id: io.github.sfh17.Player-17
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+command: player-17
+build-options:
+  libdir: /app/lib   # the newer SDK would put libraries into /app/lib64, where nothing looks for them
+
+finish-args:
+  - --share=ipc
+  - --share=network             # internet radio, the browser, covers
+  - --socket=wayland
+  - --socket=fallback-x11       # VST3 plugin windows need X11 (XWayland on Wayland)
+  - --socket=pulseaudio         # sound (also works on PipeWire)
+  - --device=dri                # video
+  # The whole home folder, as the regular install has it: music, videos and plugins can be
+  # anywhere (~/Documents/vst...), and the settings are shared with the .deb (see the launcher).
+  - --filesystem=home
+  - --filesystem=host-os:ro     # system plugins in /usr/lib/lv2 and /usr/lib/vst3 (seen at /run/host/usr)
+  - --own-name=org.mpris.MediaPlayer2.player17   # play/pause from the headset and the GNOME panel
+  - --talk-name=org.freedesktop.FileManager1    # "Show in folder"
+  - --talk-name=org.freedesktop.secrets          # Notebook 17 in the browser: its key lives in the system keyring
+  - --system-talk-name=org.freedesktop.login1     # the sound comes back after the computer wakes up
+
+add-extensions:
+  # Audio plugins packaged for Flatpak (LSP, Calf, x42 ...): flatpak install org.freedesktop.LinuxAudio.Plugins.LSP
+  org.freedesktop.LinuxAudio.Plugins:
+    directory: extensions/Plugins
+    version: '25.08'
+    add-ld-path: lib
+    merge-dirs: lv2;vst3
+    subdirectories: true
+    no-autodownload: true
+
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /lib/cmake
+  - /share/doc
+  - /share/man
+  - '*.a'
+  - '*.la'
+
+modules:
+  # Python packages: generated with flatpak-pip-generator (see README, "Flatpak")
+  - python3-requirements.json
+
+  # --- zypak: lets Chromium (the browser inside the player) use its sandbox inside Flatpak ---
+  - name: zypak
+    buildsystem: simple
+    build-commands:
+      - sed -i 's/-Werror//' Makefile
+      - make SHELL=/bin/bash
+      - make SHELL=/bin/bash install FLATPAK_DEST=/app
+    sources:
+      - type: git
+        url: https://github.com/refi64/zypak.git
+        tag: v2025.09
+        commit: 693a71c5ffa80ec9c9ce2ae03b1ccc493c698e53
+
+  # --- Electron: the browser's engine, inside the package (nothing is downloaded at run time) ---
+  - name: electron
+    buildsystem: simple
+    build-commands:
+      - unzip -q electron.zip -d /app/electron
+      - rm -f /app/electron/chrome-sandbox   # zypak takes its place
+    sources:
+      - type: file
+        only-arches: [x86_64]
+        url: https://github.com/electron/electron/releases/download/v45.2.3/electron-v45.2.3-linux-x64.zip
+        sha256: a87fe741f6d121285117e574da6c9a2e65210d410123bbc04713b099add0263b
+        dest-filename: electron.zip
+      - type: file
+        only-arches: [aarch64]
+        url: https://github.com/electron/electron/releases/download/v45.2.3/electron-v45.2.3-linux-arm64.zip
+        sha256: 397c060fd9da99ab72b78787d65545b432fcadf13ef6c96658e4f525692aae0f
+        dest-filename: electron.zip
+
+  # --- GStreamer extras the runtime does not have: tempo/pitch (SoundTouch) and LV2 hosting ---
+  - name: soundtouch
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DBUILD_SHARED_LIBS=ON
+      - -DSOUNDSTRETCH=OFF
+      - -DCMAKE_POLICY_VERSION_MINIMUM=3.5   # its CMakeLists is older than CMake 4 accepts
+    sources:
+      - type: git
+        url: https://codeberg.org/soundtouch/soundtouch.git
+        tag: 2.3.3
+
+  - name: lv2
+    buildsystem: meson
+    config-opts: [-Ddocs=disabled, -Dtests=disabled, -Dplugins=disabled]
+    sources:
+      - type: git
+        url: https://gitlab.com/lv2/lv2.git
+        tag: v1.18.10
+
+  - name: zix
+    buildsystem: meson
+    config-opts: [-Ddocs=disabled, -Dtests=disabled, -Dbenchmarks=disabled]
+    sources:
+      - type: git
+        url: https://gitlab.com/drobilla/zix.git
+        tag: v0.6.2
+
+  - name: serd
+    buildsystem: meson
+    config-opts: [-Ddocs=disabled, -Dtests=disabled, -Dtools=disabled]
+    sources:
+      - type: git
+        url: https://gitlab.com/drobilla/serd.git
+        tag: v0.32.4
+
+  - name: sord
+    buildsystem: meson
+    config-opts: [-Ddocs=disabled, -Dtests=disabled, -Dtools=disabled]
+    sources:
+      - type: git
+        url: https://gitlab.com/drobilla/sord.git
+        tag: v0.16.18
+
+  - name: sratom
+    buildsystem: meson
+    config-opts: [-Ddocs=disabled, -Dtests=disabled]
+    sources:
+      - type: git
+        url: https://gitlab.com/lv2/sratom.git
+        tag: v0.6.18
+
+  - name: lilv
+    buildsystem: meson
+    config-opts: [-Ddocs=disabled, -Dtests=disabled, -Dtools=disabled, -Dbindings_py=disabled]
+    sources:
+      - type: git
+        url: https://gitlab.com/lv2/lilv.git
+        tag: v0.24.26
+
+  - name: gst-plugins-bad-extras
+    buildsystem: meson
+    # Only the two plugins we need; the version must match the runtime's GStreamer
+    # (check with: flatpak run --command=gst-inspect-1.0 org.gnome.Platform//50 --version)
+    config-opts:
+      - -Dauto_features=disabled
+      - -Dsoundtouch=enabled
+      - -Dlv2=enabled
+      - -Dexamples=disabled
+      - -Dtests=disabled
+      - -Dintrospection=disabled
+    post-install:
+      # keep only the two plugins, the rest of gst-plugins-bad comes from the runtime
+      - find /app/lib -maxdepth 1 -name 'libgst*' -delete
+      - find /app/lib/gstreamer-1.0 -name '*.so' ! -name 'libgstsoundtouch.so' ! -name 'libgstlv2.so' -delete
+    sources:
+      - type: archive   # the release tarball (much smaller than the whole GStreamer repository)
+        url: https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.26.11.tar.xz
+        sha256: 110fb82795f0e569b1e27b12ab9699d35c7762e1ff4db95335d6ac8d1442af3d
+
+  # --- gst-python: lets GStreamer use the player's own effects written in Python (Plugins 17:
+  #     Prism EQ, saturator, OTT, limiter, Crunch). The GNOME runtime does not have it: without it
+  #     those effects were silently left out of the sound. ---
+  - name: gst-python
+    buildsystem: meson
+    config-opts:
+      - -Dpygi-overrides-dir=/app/lib/python3.13/site-packages/gi/overrides
+      - -Dplugin=disabled
+      - -Dtests=disabled
+    sources:
+      - type: archive
+        url: https://gstreamer.freedesktop.org/src/gst-python/gst-python-1.26.11.tar.xz
+        sha256: 11316ba769b56d26d8b1464c7198a9924caeae48134f7db59171faf1a73dc436
+
+  # --- the app ---
+  - name: player-17
+    buildsystem: simple
+    build-commands:
+      - install -Dm644 app.py /app/share/player-17/app.py
+      - python3 packaging/flatpak/build-p17dsp.py app.py /app/lib/player-17/libp17dsp.so
+      - install -Dm755 packaging/flatpak/player-17-flatpak.sh /app/bin/player-17
+      - install -Dm644 data/io.github.sfh17.Player-17.desktop /app/share/applications/io.github.sfh17.Player-17.desktop
+      # started by the browser (Browser-17 Flatpak) through D-Bus: its "go to the player" arrow
+      - sed 's|/usr/bin/player-17|/app/bin/player-17|' data/io.github.sfh17.Player-17.service > /tmp/p17.service && install -Dm644 /tmp/p17.service /app/share/dbus-1/services/io.github.sfh17.Player-17.service
+      - install -Dm644 data/io.github.sfh17.Player-17.metainfo.xml /app/share/metainfo/io.github.sfh17.Player-17.metainfo.xml
+      - install -Dm644 data/icons/io.github.sfh17.Player-17.svg /app/share/icons/hicolor/scalable/apps/io.github.sfh17.Player-17.svg
+      - for s in 16 32 48 64 128 256 512; do install -Dm644 data/icons/io.github.sfh17.Player-17-$s.png /app/share/icons/hicolor/${s}x${s}/apps/io.github.sfh17.Player-17.png; done
+      - mkdir -p /app/extensions/Plugins
+    sources:
+      - type: dir
+        path: ../..
+        skip: [backup-2026-11-05, player-17_1.0.1_amd64.deb, screenshots, packaging/deb, build, .flatpak-builder, repo]

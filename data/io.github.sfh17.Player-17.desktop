@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Name=Player-17
+GenericName=Music and Video Player
+GenericName[ru]=Музыкальный и видеоплеер
+Comment=Play music, video and internet radio with VST3 effects and a parametric EQ
+Comment[ru]=Музыка, видео и интернет-радио с эффектами VST3 и параметрическим эквалайзером
+Exec=player-17 %F
+Icon=io.github.sfh17.Player-17
+Terminal=false
+Categories=AudioVideo;Audio;Video;Player;
+Keywords=music;audio;video;player;radio;mp3;flac;equalizer;vst;bpm;
+Keywords[ru]=музыка;аудио;видео;плеер;радио;эквалайзер;
+MimeType=audio/mpeg;audio/flac;audio/x-flac;audio/mp4;audio/x-m4a;audio/aac;audio/ogg;audio/x-vorbis+ogg;audio/opus;audio/x-opus+ogg;audio/wav;audio/x-wav;audio/x-aiff;audio/x-ms-wma;audio/x-wavpack;audio/x-ape;video/mp4;video/x-matroska;video/webm;video/x-msvideo;video/quicktime;video/x-m4v;video/x-ms-wmv;video/x-flv;video/mp2t;video/mpeg;video/3gpp;video/ogg;
+StartupNotify=true
+StartupWMClass=io.github.sfh17.Player-17
+SingleMainWindow=false

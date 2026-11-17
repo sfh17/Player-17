@@ -1,0 +1,18 @@
+#!/bin/sh
+# Player-17 launcher (installed as /usr/bin/player-17 by the .deb).
+# pedalboard (VST3 hosting) is not in apt, so the package brings its own copy,
+# one per Python version; the matching one is handed to the app.
+PYVER=$(python3 -c 'import sys; print("%d.%d" % sys.version_info[:2])')
+LIB="/usr/lib/player-17/python$PYVER"
+if [ -d "$LIB" ]; then
+    export PLAYER_SITE="$LIB"
+fi
+# Seen as "Player-17" (not "python3") in System Monitor from the very first moment: Linux names a
+# process after the file it started, so python3 is started through a link called Player-17.
+# The link lives in the user's own runtime folder (private to him), made fresh at each start.
+PY=$(command -v python3)
+RUN="${XDG_RUNTIME_DIR:-$HOME/.cache}/player-17"
+if mkdir -p "$RUN" 2>/dev/null && ln -sfn "$PY" "$RUN/Player-17" 2>/dev/null && [ -x "$RUN/Player-17" ]; then
+    PY="$RUN/Player-17"
+fi
+exec "$PY" /usr/share/player-17/app.py "$@"

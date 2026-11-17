@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 sfh17 -->
+<component type="desktop-application">
+  <id>io.github.sfh17.Player-17</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <name>Player-17</name>
+  <summary>Play music and video with studio effects</summary>
+  <summary xml:lang="ru">Музыка и видео со студийными эффектами</summary>
+
+  <developer id="io.github.sfh17">
+    <name>sfh17</name>
+  </developer>
+
+  <description>
+    <p>Player-17 is a music and video player for people who care about sound. It has a compact mode with just the player and a full mode with your library, and it can run your own VST3 effects on everything you play.</p>
+    <p xml:lang="ru">Player-17 — музыкальный и видеоплеер для тех, кому важен звук. Компактный режим с одним плеером и полный режим с медиатекой; ваши эффекты VST3 работают на всём, что играет.</p>
+    <p>Features:</p>
+    <p xml:lang="ru">Возможности:</p>
+    <ul>
+      <li>MP3, FLAC, ALAC/M4A, OGG, Opus, WAV and more; videos in their own window</li>
+      <li xml:lang="ru">MP3, FLAC, ALAC/M4A, OGG, Opus, WAV и другие; видео в отдельном окне</li>
+      <li>Prism EQ: a parametric equalizer with draggable points and a live spectrum, or a simple 10-band mode</li>
+      <li xml:lang="ru">Prism EQ: параметрический эквалайзер с точками и живым спектром или простой 10-полосный</li>
+      <li>VST3 effects in a chain, with their own windows, presets and a load meter</li>
+      <li xml:lang="ru">Эффекты VST3 в цепочке, с их окнами, пресетами и индикатором нагрузки</li>
+      <li>A limiter with a live scope, built on LV2 (LSP or Calf)</li>
+      <li xml:lang="ru">Лимитер с живой шкалой на LV2 (LSP или Calf)</li>
+      <li>BPM detection, tempo change with Master Tempo, a saved tempo per track</li>
+      <li xml:lang="ru">Определение BPM, смена темпа с Master Tempo, сохранённый темп для трека</li>
+      <li>Internet radio with thousands of stations, and recording of what you hear</li>
+      <li xml:lang="ru">Интернет-радио с тысячами станций и запись того, что вы слышите</li>
+      <li>Albums, artists, genres, playlists, favorites and ratings</li>
+      <li xml:lang="ru">Альбомы, исполнители, жанры, плейлисты, избранное и рейтинг</li>
+      <li>Export a track or a video with all effects applied</li>
+      <li xml:lang="ru">Экспорт трека или видео со всеми эффектами</li>
+      <li>A separate equalizer and volume for video</li>
+      <li xml:lang="ru">Отдельные эквалайзер и громкость для видео</li>
+      <li>Your own colors for the whole interface</li>
+      <li xml:lang="ru">Свои цвета для всего интерфейса</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">io.github.sfh17.Player-17.desktop</launchable>
+  <provides>
+    <binary>player-17</binary>
+  </provides>
+
+  <url type="homepage">https://github.com/sfh17/Player-17</url>
+  <url type="bugtracker">https://github.com/sfh17/Player-17/issues</url>
+  <url type="vcs-browser">https://github.com/sfh17/Player-17</url>
+  <update_contact>sfh17arm@gmail.com</update_contact>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Full mode: player and library</caption>
+      <image>https://raw.githubusercontent.com/sfh17/Player-17/main/screenshots/full.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Compact mode</caption>
+      <image>https://raw.githubusercontent.com/sfh17/Player-17/main/screenshots/Compact.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Prism EQ</caption>
+      <image>https://raw.githubusercontent.com/sfh17/Player-17/main/screenshots/Eq.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Internet radio</caption>
+      <image>https://raw.githubusercontent.com/sfh17/Player-17/main/screenshots/Radio.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Video player</caption>
+      <image>https://raw.githubusercontent.com/sfh17/Player-17/main/screenshots/video.png</image>
+    </screenshot>
+  </screenshots>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#8ec5ff</color>
+    <color type="primary" scheme_preference="dark">#0a1a33</color>
+  </branding>
+
+  <content_rating type="oars-1.1"/>
+
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+
+  <categories>
+    <category>AudioVideo</category>
+    <category>Audio</category>
+    <category>Player</category>
+  </categories>
+  <keywords>
+    <keyword>music</keyword>
+    <keyword>video</keyword>
+    <keyword>equalizer</keyword>
+    <keyword>VST3</keyword>
+    <keyword>LV2</keyword>
+    <keyword>BPM</keyword>
+  </keywords>
+
+  <releases>
+    <release version="1.0.5" date="2026-11-17">
+      <description><p>Player-17 and its helpers show up in System Monitor with the Player-17 icon.</p></description>
+    </release>
+    <release version="1.0.4" date="2026-11-17">
+      <description><p>The background tempo analysis shows as "Player-17 BPM" instead of "python3".</p></description>
+    </release>
+    <release version="1.0.3" date="2026-11-17">
+      <description><p>Named "Player-17" in System Monitor from the moment it starts.</p></description>
+    </release>
+    <release version="1.0.2" date="2026-11-17">
+      <description><p>Shows up as "Player-17" in System Monitor instead of "python3".</p></description>
+    </release>
+    <release version="1.0.1" date="2026-10-20">
+      <description>
+        <p>Fixes and improvements:</p>
+        <ul>
+          <li>The limiter is found again on newer systems</li>
+          <li>Radio recordings and FLAC exports open in every player (24 bit)</li>
+          <li>Reset and preset import update the equalizer without reopening it</li>
+          <li>The limiter panel can be folded, for a compact equalizer</li>
+          <li>Video: the bars hide by themselves in full screen and in a maximized window</li>
+          <li>Removing an effect no longer fails</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.0.0" date="2026-10-20">
+      <description>
+        <p>First release: music and video player with Prism EQ, VST3 effects, a limiter,
+        internet radio with recording, and export with all effects.</p>
+      </description>
+    </release>
+  </releases>
+</component>
